@@ -138,8 +138,22 @@ def task_info(dag_id, task_id):
     return jsonify(fields)
 
 
-# ToDo: Shouldn't this be a PUT method?
-@api_experimental.route('/dags/<string:dag_id>/paused/<string:paused>', methods=['GET'])
+@api_experimental.route('/dags/<string:dag_id>/tasks', methods=['GET'])
+@requires_authentication
+def task_info(dag_id):
+    """Returns a JSON with list of available tasks. """
+    try:
+        info = get_task(dag_id)
+    except AirflowException as err:
+        _log.info(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+
+    return jsonify(info)
+
+
+@api_experimental.route('/dags/<string:dag_id>/paused/<string:paused>', methods=['PUT'])
 @requires_authentication
 def dag_paused(dag_id, paused):
     """(Un)pauses a dag"""

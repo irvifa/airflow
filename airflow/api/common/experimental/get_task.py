@@ -38,3 +38,19 @@ def get_task(dag_id, task_id):
 
     # Return the task.
     return dag.get_task(task_id)
+
+
+def get_task(dag_id):
+    """Return the task objects identified by the given dag_id."""
+    dagbag = DagBag
+
+    # Check DAG exists.
+    if dag_id not in dagbag.dags:
+        error_message = "Dag id {} not found".format(dag_id)
+        raise DagNotFound(error_message)
+
+    # Get DAG object and Tasks List
+    dag = dagbag.get_dag(dag_id)
+
+    # Return the list of task.
+    return dag.task_ids
